@@ -3,7 +3,7 @@ from riscv_data.registers import Registers
 from utils import converteBin
 
 class InstructionFetch:
-    def instructionFetch(line):
+    def instructionFetch(self, line, PC):
 
         instruction = Instructions.instructions[line[0]]
         tipo = instruction["type"]
@@ -11,19 +11,26 @@ class InstructionFetch:
         match tipo:
             case "R": # func7 / rs2 / rs1 / funct3 / rd / opcode
                 bitstring = instruction["func7"] + converteBin(Registers.registers[line[3]], 5) + converteBin(Registers.registers[line[2]], 5) + instruction["func3"] + converteBin(Registers.registers[line[1]], 5) + instruction["opcode"]
+                PC = self.incrementPC(PC)
             case "I": # imm[11:0] / rs1 / funct3 / rd / opcode 
                 if instruction[0] == "l":
-                    bitstring = "" # implementar
+                    imm, reg = self.storeLoadInterpreting(line)
+                    bitstring = converteBin(imm, 12) + converteBin(Registers.registers[reg]) + instruction["func3"] + converteBin(Registers.registers[line[1]], 5) + instruction["opcode"]
                 else:
                     bitstring = converteBin([line[3]], 12) + converteBin(Registers.registers[line[2]], 5) + instruction["func3"] + converteBin(Registers.registers[line[1]], 5) + instruction["opcode"]
+                PC = self.incrementPC(PC)
             case "S": # imm[11:5] / rs2 / rs1 / funct3 / imm[4:0] / opcode 
                 imm, reg = InstructionFetch.storeLoadInterpreting(line)
                 imm = converteBin(imm, 12)
                 immSplit1 = imm[0:6]
                 immSplit2 = imm[6:]
                 bitstring = immSplit1 + converteBin(Registers.registers[reg], 5) + converteBin(Registers.registers[line[1]], 5) + instruction["func3"] + immSplit2 + instruction["opcode"]
+                PC = self.incrementPC(PC)
                 
             case "B": # imm[12|10:5] / rs2 / rs1 / funct3 / imm[4:1|11] / opcode
+                rotulo = line[3]
+                
+                imm = self.calcularImediato(PC, rotulo)
                 imm1 = "" # implementar
                 imm2 = ""
 
@@ -40,14 +47,16 @@ class InstructionFetch:
         InstructionFetch.incrementPC()
 
     def incrementPC(PC):
-        return PC+1
+        return PC+4
     
-    def storeLoadInterpreting(line):
+    def storeLoadInterpreting(self, line):
         s = line[2]
 
-        s.rstrip(")")
-        s.split("(")
-        imm = s[0]
-        reg = s[1]
+        sStrip = s.rstrip(")")
+        parts = sStrip.split("(")
+        imm = parts[0]
+        reg = parts[1]
         return imm, reg
-        
+    
+    def calcularImediato(PC, rotulo):
+        # implementar

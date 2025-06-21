@@ -3,7 +3,7 @@
 class Instructions:
     instructions = {
         # tipo R
-        "add": {"type": "R", "opcode": "0110011", "func3": "123", "func7": "1234567"}, 
+        "add": {"type": "R", "opcode": "0110011", "func3": "0", "func7": "0"}, 
         "sub": {"type": "R", "opcode": "0110011", "func3": "0", "func7": "0"}, 
         "xor": {"type": "R", "opcode": "0110011", "func3": "0", "func7": "0"}, 
         "or": {"type": "R", "opcode": "0110011", "func3": "0", "func7": "0"}, 
