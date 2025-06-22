@@ -10,8 +10,5 @@ class IO:
             linha = f.read()
             textEdit.setPlainText(linha)
 
-    #cria janela pra escrever o nome do arquivo
-    #def newFile(self):
-
     #@staticmethod
     #def saveFile():
