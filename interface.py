@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
             #self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
 
-
+'''
 def main():
     app = QApplication(sys.argv)
     window = MainWindow()
@@ -146,3 +146,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+'''
