@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog,
 from PyQt5.QtGui import QIcon
 from PyQt5.uic import loadUi
 from pipeline.RunPipeline import RunPipeline
-from Interface.MainWindow import MainWindow
+from Interface.interface import MainWindow
 
 def main():
     app = QApplication(sys.argv)
