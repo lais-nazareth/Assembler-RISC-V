@@ -116,7 +116,7 @@ class InstructionFetch:
                 dec = line[2].split("(")
                 imm = dec[0]
                 rs1 = Registers.registers[dec[1].rstrip(")")]
-                return ['I', line[0], rd, rs1, imm], pc
+                return ['S', line[0], rd, rs1, imm], pc
         
         if instruction["type"] == "J":
             if line[0] == "jal": # jal x1, offset ou jal x1, label
