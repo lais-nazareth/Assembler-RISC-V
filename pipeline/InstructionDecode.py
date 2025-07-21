@@ -84,8 +84,8 @@ class InstructionDecode:
             self.rs1 = listaFetch[2]
             self.rs2 = listaFetch[3]
             self.rs2orimm = listaFetch[4]
-            rd = Registers.value_regs[self.rs1]
-            rs1 = Registers.value_regs[self.rs2]
+            rs1 = Registers.value_regs[self.rs1]
+            rs2 = Registers.value_regs[self.rs2]
             imm = self.rs2orimm
             return ['B', listaFetch[1], rs1, rs2, imm]
         
