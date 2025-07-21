@@ -1,9 +1,11 @@
 import sys
+import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLineEdit, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.uic import loadUi
 from riscv_data.registers import Registers
-
+from pipeline.RunPipeline import RunPipeline
+from pipeline.MainMemory import MainMemory
 
 
 YB = 60 #Altura dos Botoes
@@ -21,8 +23,12 @@ class MainWindow(QMainWindow):
         
         self.regs = Registers()
         self.steps = ["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
-        self.instructions = ["lw", "sw", "sub", "lw", "add", "nop", "lw"] 
+        self.instructions = [""] * (2**10)
 
+        #self.instructions = ["lw", "sw", "sub", "lw", "add", "nop", "lw"] 
+        self.file_name = None
+        self.main_memory = MainMemory()
+        self.mem = self.main_memory.memory
         self.run = False
 
         #botao de run (Roda todo pipeline)
@@ -43,6 +49,8 @@ class MainWindow(QMainWindow):
         
         #Tabela Pipeline
         self.table_pipeline = QTableWidget(self)
+        self.table_pipeline.setHorizontalHeaderLabels([""] * (2**10))
+
         self.initTablePipeline()
         
         #Tabela Registradores
@@ -63,9 +71,14 @@ class MainWindow(QMainWindow):
 
     def runClicked(self):
         #print("running...");
-        self.run_button.setDisabled(True) #Ajustar para quando terminar de rodar voltar a ser false
-        self.run = True
-        self.updateRunning()
+        if self.file_name:
+            self.run_button.setDisabled(True) #Ajustar para quando terminar de rodar voltar a ser false:
+            self.run = True
+            self.pipeline = RunPipeline(self.file_name)
+            self.instructions.append(self.pipeline.ifetch.currentline)
+            self.updateRunning()
+        else:
+            print("SELECIONE UM ARQUIVO PARA EXECUTAR")
 
 
 
@@ -86,9 +99,9 @@ class MainWindow(QMainWindow):
 
     def browseClicked(self):
         #print("browsing file...")
-        file = QFileDialog.getOpenFileName(self,'Select File', 'C:/', 'BIN File (*.bin)')
-        self.file_path.setPlaceholderText(file[0]) #nome do arquivo é file[0]
-    
+        file = QFileDialog.getOpenFileName(self,'Select File', os.path.dirname(os.path.abspath(sys.argv[0])), "BIN File (*.bin), ASM File (*.asm)")
+        self.file_name = file[0]
+        self.file_path.setPlaceholderText(self.file_name) #nome do arquivo é file[0]
 
     def initFilePath(self):
         self.file_path.setGeometry(200 + 120 + 40, YB, 480, 40)
@@ -135,7 +148,12 @@ class MainWindow(QMainWindow):
             for i in range (0,len(self.instructions)): #preenche com os steps
                     for j in range (0,5):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
-            #self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
+            self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
+            i = 0
+            while (self.mem[i]): #Aparece somente os endereços ocupados (!= None)
+                self.table_mem.setItem(i,0, QTableWidgetItem(self.mem[i]))
+                i+=1
+            self.table_mem.setRowCount(i)
 
 '''
 def main():
