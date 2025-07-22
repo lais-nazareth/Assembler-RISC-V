@@ -42,7 +42,8 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
   |   jalr          | jalr rd, imm(rs1) | jalr rd, label    |
 
 ### Sobre a implementação:
-* A pasta **risc_data** contém os dicionários que contém dicionários que contém os parametros dos registradores (registers.py) e das instruções (instructions.py)
+* A pasta **risc_data** contém os dicionários que contém dicionários que contém os parametros dos registradores (registers.py) e das instruções (instructions.py).
 * A pasta **interface** contém os arquivos necessários para a implementação da interface, que recebe informações do arquivo pipeline/runPipelino para relacionar com as tabelas.
-* A pasta **pipeline** 
-  
+* A pasta **pipeline** contém arquivos nomeados com cada Instrução do Pipeline, que cada um simula cada execução, sendo conectados pelo arquivo **RunPipeline.py**, que contém uma operação para o RUN e outra para o NEXT.
+* A classe main executa a interface que está conectada ao Pipeline.
+Desconsiderar Arquivos e Pastas com OLD.
