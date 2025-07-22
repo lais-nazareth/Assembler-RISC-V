@@ -11,13 +11,12 @@ class InstructionFetch:
         self.currentline = None
         self.labels = {}
         if self.binaryfile:
-            with open(self.binaryfile, "rb") as f:
+            with open(self.binaryfile, "r") as f:
                 self.filelist = []
-                while True:
-                    instrucao = f.read(4) #1 instrução = 32 bits = 4bytes
-                    if len(instrucao) < 4:
-                        break #fim do arquivo
-                    self.filelist.append(instrucao)
+                for linha in f:
+                    instrucao = linha.strip()
+                    if len(instrucao) == 32:
+                        self.filelist.append(instrucao)
         else:
             self.findlabelsASM()
             fp = open(self.asmfile, "r")
@@ -35,7 +34,6 @@ class InstructionFetch:
 
 
         fp.close()
-
 
     def runInstructionFetch(self, pc):
         if self.binaryfile:
@@ -76,7 +74,10 @@ class InstructionFetch:
 
         if line[0] in self.labels:
             if len(line) == 1:
-                return self.runInstructionFetchASM(pc)
+                if line[0] != "nop":
+                    return self.runInstructionFetchASM(pc)
+                else:
+                    return ['R', 'addi', 0, 0, 0]
             else:
                 line = line[1:]
 
@@ -116,7 +117,7 @@ class InstructionFetch:
                     rs1 = Registers.registers[dec[1].rstrip(")")]
                     return ['I', line[0], rd, rs1, imm], pc
                 except:
-                    imm = self.labels[line[2]+':'] - pc # fix label
+                    imm = self.labels[line[2]+':'] - pc + 1 # fix label
                     return ['I', line[0], rd, imm], pc
             
         if instruction["type"] == "S": # sw t0, 40(t1)
@@ -133,7 +134,7 @@ class InstructionFetch:
                     eval(line[2])
                     imm = int(line[2])
                 except:
-                    imm = self.labels[line[2]+':'] - pc # fix label
+                    imm = self.labels[line[2]+':'] - pc + 1 # fix label
                 return ['J', line[0], rd, imm], pc
             
             if line[0] == "j":
@@ -142,7 +143,7 @@ class InstructionFetch:
                     eval(line[1])
                     imm = int(line[1])
                 except:
-                    imm = self.labels[line[1]+':'] - pc # fix label
+                    imm = self.labels[line[1]+':'] - pc + 1 # fix label
                 return ['J', line[0], rd, imm], pc
             
         if instruction["type"] == "B":
@@ -152,11 +153,22 @@ class InstructionFetch:
                 eval(line[3])
                 imm = int(line[3])
             except:
-                imm = self.labels[line[3]+':'] - pc # fix label
+                imm = self.labels[line[3]+':'] - pc + 1 # fix label
             return ['B', line[0], rs1, rs2, imm], pc
 
 
-    # def runInstructionFetchBinary(self, pc):
+    def runInstructionFetchBinary(self, pc):
+        if pc >= len(self.filelist):
+            return "FIM DA EXECUÇÃO", -1
+
+        instrucao_byte = self.filelist[pc]
+
+        # instrucao_bin = ''.join(format(byte, '08b') for byte in instrucao_byte)
+
+        instrucao_final = self.decodifica(instrucao_byte)
+
+        return instrucao_final, pc + 1
+
     #     # faz instruction fetch
     def tipoR(self, instrucao):
         funct7 = instrucao[0:7]
@@ -192,7 +204,7 @@ class InstructionFetch:
         if nome is None:
             return "Instrução R-type não identificada"
 
-        return ['R',nome, Registers.registers[rd], Registers.registers[rs1], Registers.registers[rs2]]
+        return ['R',nome, rd, rs1, rs2]
         
     def tipoI(self, instrucao):
         imm = instrucao[0:12]
@@ -210,8 +222,8 @@ class InstructionFetch:
         nome = None
 
         if opcode == "0010011":
-            if rd == 0 and rs1 == 0 and imm_val == 0:
-                return "nop"
+            # if rd == 0 and rs1 == 0 and imm_val == 0:
+                # return "nop"
             nome = "addi"
 
         elif opcode == "0000011":
@@ -222,7 +234,7 @@ class InstructionFetch:
         else:
             return "Instrução do tipo-I não identificada"
 
-        return ['I', nome, Registers.registers[rd], Registers.registers[rs1], imm] 
+        return ['I', nome, rd, rs1, imm_val] 
 
     def tipoS(self, instrucao):
         imm_11_5 = instrucao[0:7]
@@ -243,7 +255,7 @@ class InstructionFetch:
         else:
             return "Instrução tipo-S desconhecida"
 
-        return ['S', nome, Registers.registers[rd], Registers.registers[rs1], imm]
+        return ['S', nome, rs2, rs1, imm]
 
     def tipoB(self, instrucao):
         imm_12 = instrucao[0]
@@ -273,10 +285,10 @@ class InstructionFetch:
         if nome is None:
             return "Instrução tipo-B desconhecida"
 
-        return ['B', nome,  Registers.registers[rs1], Registers.registers[rs2], imm_val]
+        return ['B', nome,  rs1, rs2, imm_val//4]
         
     def tipoJ(self, instrucao):
-        imm_20 = instrucao[0:20]
+        imm_20 = instrucao[0]
         imm_10_1 = instrucao[1:11]
         imm_11 = instrucao[11]
         imm_19_12 = instrucao[12:20]
@@ -288,9 +300,9 @@ class InstructionFetch:
             imm_val -= (1 << 21)
 
         if rd == 0:
-            return ['J', 'j', imm_val]
+            return ['J', 'j', rd, imm_val//4]
         else:
-            return ['J', "jal", Registers.registers[rd], imm_val]
+            return ['J', "jal", rd, imm_val//4]
             
     def decodifica(self, instrucao):
         opcode = instrucao[25:32]
@@ -312,6 +324,6 @@ class InstructionFetch:
 
         else:
             print("Opcode não suportado")
+            return
 
         return instr_formatada
-            

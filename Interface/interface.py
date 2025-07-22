@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
 
     def browseClicked(self):
         #print("browsing file...")
-        file = QFileDialog.getOpenFileName(self,'Select File', os.path.dirname(os.path.abspath(sys.argv[0])), "BIN File (*.bin), ASM File (*.asm)")
+        file = QFileDialog.getOpenFileName(self,'Select File', os.path.dirname(os.path.abspath(sys.argv[0]))) # ele nao tava localizando o .bin, entao pra testar eu tirei
         self.file_name = file[0]
         self.file_path.setPlaceholderText(self.file_name) #nome do arquivo é file[0]
 
@@ -163,8 +163,8 @@ class MainWindow(QMainWindow):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
             self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
             i = 0
-            while (self.mem[i]): #Aparece somente os endereços ocupados (!= None)
-                self.table_mem.setItem(i,0, QTableWidgetItem(self.mem[i]))
+            for i in range(len(self.pipeline.memory)): #Aparece somente os endereços ocupados (!= None)
+                self.table_mem.setItem(i,0, QTableWidgetItem(self.pipeline.memory[i]))
                 i+=1
             self.table_mem.setRowCount(i)
 

@@ -1,13 +1,11 @@
-from RunPipeline import RunPipeline
+
+class MemoryAccess:
+    def __init__(self):
+        self.m = 0
+        # listexecute: [tipo, mnemonico, valor(rd), posicao a ler]
+    def runMemoryAccess(self, list_execute, memory): #
+        if (list_execute[1] == "lw"):
+            return memory[list_execute[3]] #retorna o valor que está no lw
+        elif(list_execute[1] == "sw"):
+            memory[list_execute[3]] = list_execute[2] # salva na posicao o valor de rd
     
-    
-class MemoryAcess:
-    def __init__(self, list_execute):
-        self.runPipeline = RunPipeline()
-        self.memory = self.runPipeline.
-        self.listaDecode = list_execute
-        #[tipo, mnemonico, adress(rd), posicao a ler]
-    def runMemorryAcess(self): #
-        if (self.listaDecode[1] == "lw"):
-            self.memory[self.listaDecode[2]] =  
-        #elif(self.lista[1] == "sw"):

@@ -37,8 +37,8 @@ class Execute():
                 case 'lw':
                     return ['I', listaDecode[1], listaDecode[2], listaDecode[3] + listaDecode[4]], pc # retorna [tipo, mnemonico, adress(rd), posicao a ler]
                 
-        # if listaDecode[0] == 'J': # o valor imm vai pro PC | rd = PC+4 | PC += imm 
-        #     return ['I', listaDecode[2], pc + listaDecode[3]], pc
+        if listaDecode[0] == 'S': # o valor imm vai pro PC | rd = PC+4 | PC += imm 
+            return ['S', listaDecode[1], listaDecode[2], listaDecode[3] + listaDecode[4]], pc # retorna [tipo, mnemonico, adress(rd), posicao a guardar]
         
         if listaDecode[0] == 'B':
             match listaDecode[1]:
@@ -67,5 +67,5 @@ class Execute():
             match listaDecode[1]:
                 case 'jal':
                     return ['J', listaDecode[1], listaDecode[2], pc + 1], pc + listaDecode[3]
-                case 'J':
+                case 'j':
                     return ['J', listaDecode[1], listaDecode[2], 0], pc + listaDecode[3]

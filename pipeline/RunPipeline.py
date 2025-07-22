@@ -12,8 +12,8 @@ class RunPipeline():
         self.asmfile = None
         self.filetype = None
         
-        self.value_regs = [1] * 32
-        self.memory = [None] * 1000
+        self.value_regs = [0] * 32
+        self.memory = [None] * 20
 
         self.listaInstrucoes = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
         self.listaRegs = Registers().registers
@@ -31,7 +31,7 @@ class RunPipeline():
         self.ifetch = InstructionFetch(binaryfile=self.binaryfile, asmfile=self.asmfile)
         self.id = InstructionDecode(self.filetype)
         self.ex = Execute()
-        # self.mem = MemoryAccess()
+        self.mem = MemoryAccess()
         self.wb = WriteBack()
 
         # self.run()
@@ -68,9 +68,13 @@ class RunPipeline():
         return self.listaInstrucoes
 
     def run(self):
-        for i in range(10):
+        # print(self.memory)
+        # print(self.value_regs)
+        while True: # ciclos
+            oldpc = self.pc
             listaFetch, newpc = self.ifetch.runInstructionFetch(self.pc) # retorna o tipo, qual op fazer, indice rs1, indice rs2 e indice rd ou imediato
             if newpc == -1:
+                print(self.listaInstrucoes)
                 return
             print(listaFetch)
             self.atualInstrucao = listaFetch
@@ -78,17 +82,27 @@ class RunPipeline():
             self.pc = newpc
             listaDecode = self.id.runInstructionDecode(listaFetch, self.value_regs)
             print(listaDecode)
-            listaExecute, pcexec = self.ex.runExecute(listaDecode, self.pc)
+            if self.asmfile:
+                listaExecute, pcexec = self.ex.runExecute(listaDecode, newpc)
+            else:
+                listaExecute, pcexec = self.ex.runExecute(listaDecode, oldpc)
             if listaExecute[0] == 'B':
                 if listaExecute[2]:
                     self.pc = pcexec
             if listaExecute[0] == 'J':
                 self.pc = pcexec
             print(self.pc)
-
-            # self.mem.runMemoryAccess()
+            if listaExecute[1] == "lw" or listaExecute[1] == "sw":
+                listaExecToMem = listaExecute[:]
+                listaExecToMem[2] = self.value_regs[listaExecute[2]]
+                wordRead = self.mem.runMemoryAccess(listaExecToMem, self.memory)
+                listaExecute[-1] = wordRead
+                self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
+            else:
+                self.mem.runMemoryAccess(listaExecute, self.value_regs)
+            # print(self.memory)
             self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
-        
+            print(self.value_regs)
 
 
 
