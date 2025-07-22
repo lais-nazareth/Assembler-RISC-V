@@ -78,6 +78,8 @@ class MainWindow(QMainWindow):
             # Executa pipeline e converte nomes
             self.pipeline = RunPipeline(self.file_name)
 
+            self.pipeline.run()
+
             # Pega TODAS as instruções formatadas
             self.instructions = self.pipeline.converteNome()
 
@@ -153,7 +155,7 @@ class MainWindow(QMainWindow):
         if (self.run):
             #Tabela de Registradores Atualizada com o RUN:
             for i in range (0,32):
-                self.table_regs.setItem(i,0, QTableWidgetItem(str(self.regs.value_regs[i])))
+                self.table_regs.setItem(i,0, QTableWidgetItem(str(self.pipeline.value_regs[i])))
             #Preenchendo a Tabela com as instrucoes 
 
             for i in range (0,len(self.instructions)): #preenche com os steps

@@ -12,6 +12,9 @@ class RunPipeline():
         self.asmfile = None
         self.filetype = None
         
+        self.value_regs = [1] * 32
+        self.memory = [None] * 1000
+
         self.listaInstrucoes = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
         self.listaRegs = Registers().registers
         self.atualInstrucao = []
@@ -28,10 +31,10 @@ class RunPipeline():
         self.ifetch = InstructionFetch(binaryfile=self.binaryfile, asmfile=self.asmfile)
         self.id = InstructionDecode(self.filetype)
         self.ex = Execute()
-        # self.MEM = MemoryAccess()
-        # self.WB = WriteBack()
+        # self.mem = MemoryAccess()
+        self.wb = WriteBack()
 
-        self.run()
+        # self.run()
 
     def converteNome(self):
         # Criar dicionário reverso
@@ -73,18 +76,18 @@ class RunPipeline():
             self.atualInstrucao = listaFetch
             self.converteNome()
             self.pc = newpc
-            listaDecode = self.id.runInstructionDecode(listaFetch)
+            listaDecode = self.id.runInstructionDecode(listaFetch, self.value_regs)
             print(listaDecode)
             listaExecute, pcexec = self.ex.runExecute(listaDecode, self.pc)
             if listaExecute[0] == 'B':
-                if listaExecute[1]:
+                if listaExecute[2]:
                     self.pc = pcexec
             if listaExecute[0] == 'J':
                 self.pc = pcexec
             print(self.pc)
 
-        # print(self.mem.runMemoryAccess())
-        # print(self.wb.runWriteBack())
+            # self.mem.runMemoryAccess()
+            self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
         
 
 

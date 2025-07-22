@@ -25,13 +25,13 @@ class InstructionDecode:
         self.rs2orimm = 0
         # self.pc
 
-    def runInstructionDecode(self, listaFetch):
+    def runInstructionDecode(self, listaFetch, value_regs):
         if self.fileType == "asm":
-            return self.runInstructionDecodeAsm(listaFetch)
+            return self.runInstructionDecodeAsm(listaFetch, value_regs)
         else:
-            return self.runInstructionDecodeBinary(listaFetch)        
+            return self.runInstructionDecodeBinary(listaFetch, value_regs)        
 
-    def runInstructionDecodeAsm(self, listaFetch):
+    def runInstructionDecodeAsm(self, listaFetch, value_regs):
 
         if (not listaFetch):
             return None
@@ -48,9 +48,9 @@ class InstructionDecode:
             self.rd = listaFetch[2]
             self.rs1 = listaFetch[3]
             self.rs2orimm = listaFetch[4]
-            rd = Registers.value_regs[self.rd]
-            rs1 = Registers.value_regs[self.rs1]
-            rs2 = Registers.value_regs[self.rs2]
+            rd = value_regs[self.rd]
+            rs1 = value_regs[self.rs1]
+            rs2 = value_regs[self.rs2]
             return ['R', listaFetch[1], self.rd, rs1, rs2]
 
         if (self.type == 'I'):
@@ -58,15 +58,15 @@ class InstructionDecode:
                 self.rd = listaFetch[2]
                 self.rs1 = listaFetch[3]
                 self.rs2orimm = listaFetch[4]
-                rd = Registers.value_regs[self.rd]
-                rs1 = Registers.value_regs[self.rs1]
+                rd = value_regs[self.rd]
+                rs1 = value_regs[self.rs1]
                 imm = self.rs2orimm
                 return ['I', listaFetch[1], self.rd, rs1, imm]
         
         if (self.type == 'J'):
             self.rd = listaFetch[2]
             self.rs2orimm = listaFetch[3]
-            rd = Registers.value_regs[self.rd]
+            rd = value_regs[self.rd]
             imm = self.rs2orimm
 
             return ['J', listaFetch[1], self.rd, imm]
@@ -75,8 +75,8 @@ class InstructionDecode:
             self.rd = listaFetch[2]
             self.rs1 = listaFetch[3]
             self.rs2orimm = listaFetch[4]
-            rd = Registers.value_regs[self.rd]
-            rs1 = Registers.value_regs[self.rs1]
+            rd = value_regs[self.rd]
+            rs1 = value_regs[self.rs1]
             imm = self.rs2orimm
             return ['I', listaFetch[1], self.rd, rs1, imm] 
 
@@ -84,12 +84,12 @@ class InstructionDecode:
             self.rs1 = listaFetch[2]
             self.rs2 = listaFetch[3]
             self.rs2orimm = listaFetch[4]
-            rs1 = Registers.value_regs[self.rs1]
-            rs2 = Registers.value_regs[self.rs2]
+            rs1 = value_regs[self.rs1]
+            rs2 = value_regs[self.rs2]
             imm = self.rs2orimm
             return ['B', listaFetch[1], rs1, rs2, imm]
         
-    def runInstructionDecodeBinary(self, listafetch):
+    def runInstructionDecodeBinary(self, listafetch, value_regs):
         a = 0
 
         

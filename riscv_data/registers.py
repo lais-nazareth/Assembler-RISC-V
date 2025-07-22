@@ -66,5 +66,3 @@ class Registers:
         "x30" : 30,
         "x31" : 31
     }
-
-    value_regs = [0] * 32 # Valores de Cada Registrador
