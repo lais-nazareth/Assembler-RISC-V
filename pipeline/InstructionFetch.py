@@ -56,9 +56,12 @@ class InstructionFetch:
         """
 
         if len(self.filelist) == pc:
-            return "FIM DA EXECUCAO"
-
-        line = self.filelist[pc].split()
+            return "FIM DA EXECUCAO", -1
+        
+        try:
+            line = self.filelist[pc].split()
+        except:
+            return "FIM DA EXECUCAO", -1
         self.currentline = line
         pc += 1
 
@@ -89,13 +92,13 @@ class InstructionFetch:
             if line[0] == "addi": # addi t0, t1, 40
                 rd = Registers.registers[line[1].rstrip(",")]
                 rs1 = Registers.registers[line[2].rstrip(",")]
-                imm = Registers.registers[line[3]]
+                imm = int(line[3])
                 return ['I', line[0], rd, rs1, imm], pc
             
             if line[0] == "lw": #lw t0, 40(t1)
                 rd = Registers.registers[line[1].rstrip(",")]
                 dec = line[2].split("(")
-                imm = dec[0]
+                imm = int(dec[0])
                 rs1 = Registers.registers[dec[1].rstrip(")")]
                 return ['I', line[0], rd, rs1, imm], pc
             
@@ -104,37 +107,37 @@ class InstructionFetch:
 
                 try:
                     dec = line[2].split("(")
-                    imm = dec[0]
+                    imm = int(dec[0])
                     rs1 = Registers.registers[dec[1].rstrip(")")]
                     return ['I', line[0], rd, rs1, imm], pc
                 except:
-                    imm = self.labels[line[2]+':'] # fix label
+                    imm = self.labels[line[2]+':'] - pc # fix label
                     return ['I', line[0], rd, imm], pc
             
         if instruction["type"] == "S": # sw t0, 40(t1)
                 rd = Registers.registers[line[1].rstrip(",")]
                 dec = line[2].split("(")
-                imm = dec[0]
+                imm = int(dec[0])
                 rs1 = Registers.registers[dec[1].rstrip(")")]
-                return ['I', line[0], rd, rs1, imm], pc
+                return ['S', line[0], rd, rs1, imm], pc
         
         if instruction["type"] == "J":
             if line[0] == "jal": # jal x1, offset ou jal x1, label
                 rd = Registers.registers[line[1].rstrip(",")]
                 try:
                     eval(line[2])
-                    imm = line[2]
+                    imm = int(line[2])
                 except:
-                    imm = self.labels[line[2]+':'] # fix label
+                    imm = self.labels[line[2]+':'] - pc # fix label
                 return ['J', line[0], rd, imm], pc
             
             if line[0] == "j":
                 rd = 0
                 try:
                     eval(line[1])
-                    imm = line[1]
+                    imm = int(line[1])
                 except:
-                    imm = self.labels[line[1]+':'] # fix label
+                    imm = self.labels[line[1]+':'] - pc # fix label
                 return ['J', line[0], rd, imm], pc
             
         if instruction["type"] == "B":
@@ -142,9 +145,9 @@ class InstructionFetch:
             rs2 = Registers.registers[line[2].rstrip(",")]
             try:
                 eval(line[3])
-                imm = line[3]
+                imm = int(line[3])
             except:
-                imm = self.labels[line[3]+':'] # fix label
+                imm = self.labels[line[3]+':'] - pc # fix label
             return ['B', line[0], rs1, rs2, imm], pc
 
 

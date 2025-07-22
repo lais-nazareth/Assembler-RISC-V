@@ -1,7 +1,8 @@
-FOR:
+FOR: bge s2, t1, ENDFOR
+ addi t0, t1, 10
 
-ENDFOR: bge s2, t1, FOR
+ENDFOR: 
  add t0, t1, t2
 
 jal x1, FOR
-bge s2, t1, ENDFOR
+bge x0, t1, ENDFOR

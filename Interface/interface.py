@@ -23,10 +23,11 @@ class MainWindow(QMainWindow):
         
         self.regs = Registers()
         self.steps = ["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
-        self.instructions = [""] * (2**10)
 
         #self.instructions = ["lw", "sw", "sub", "lw", "add", "nop", "lw"] 
         self.file_name = None
+        self.instructions = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
+
         self.main_memory = MainMemory()
         self.mem = self.main_memory.memory
         self.run = False
@@ -70,15 +71,24 @@ class MainWindow(QMainWindow):
 
 
     def runClicked(self):
-        #print("running...");
         if self.file_name:
-            self.run_button.setDisabled(True) #Ajustar para quando terminar de rodar voltar a ser false:
+            self.run_button.setDisabled(True)
             self.run = True
+            
+            # Executa pipeline e converte nomes
             self.pipeline = RunPipeline(self.file_name)
-            self.instructions.append(self.pipeline.ifetch.currentline)
+
+            # Pega TODAS as instruções formatadas
+            self.instructions = self.pipeline.converteNome()
+
+            # Atualiza a tabela com essas instruções
+            self.updatePipelineTable()
+
             self.updateRunning()
         else:
             print("SELECIONE UM ARQUIVO PARA EXECUTAR")
+
+
 
 
 
@@ -145,6 +155,7 @@ class MainWindow(QMainWindow):
             for i in range (0,32):
                 self.table_regs.setItem(i,0, QTableWidgetItem(str(self.regs.value_regs[i])))
             #Preenchendo a Tabela com as instrucoes 
+
             for i in range (0,len(self.instructions)): #preenche com os steps
                     for j in range (0,5):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
@@ -154,6 +165,17 @@ class MainWindow(QMainWindow):
                 self.table_mem.setItem(i,0, QTableWidgetItem(self.mem[i]))
                 i+=1
             self.table_mem.setRowCount(i)
+
+    def updatePipelineTable(self):
+        num_instrucoes = len(self.instructions)
+        num_ciclos = num_instrucoes + 4  # pode ajustar
+
+        self.table_pipeline.setRowCount(num_instrucoes)
+        self.table_pipeline.setColumnCount(num_ciclos)
+
+        # Atualiza a coluna lateral com os nomes legíveis
+        self.table_pipeline.setVerticalHeaderLabels(self.instructions)
+
 
 '''
 def main():

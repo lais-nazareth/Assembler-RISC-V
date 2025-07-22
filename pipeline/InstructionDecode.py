@@ -27,9 +27,9 @@ class InstructionDecode:
 
     def runInstructionDecode(self, listaFetch):
         if self.fileType == "asm":
-            self.runInstructionDecodeAsm(listaFetch)
+            return self.runInstructionDecodeAsm(listaFetch)
         else:
-            self.runInstructionDecodeBinary(listaFetch)        
+            return self.runInstructionDecodeBinary(listaFetch)        
 
     def runInstructionDecodeAsm(self, listaFetch):
 
@@ -67,7 +67,7 @@ class InstructionDecode:
             self.rd = listaFetch[2]
             self.rs2orimm = listaFetch[3]
             rd = Registers.value_regs[self.rd]
-            imm = Registers.value_regs[self.rs2orimmimm]
+            imm = self.rs2orimm
 
             return ['J', listaFetch[1], self.rd, imm]
         
