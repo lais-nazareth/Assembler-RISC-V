@@ -61,7 +61,7 @@ class Execute():
                     if (listaDecode[2] < listaDecode[3]):
                         return ['B', listaDecode[1], (listaDecode[2] < listaDecode[3]), pc + listaDecode[4]], pc + listaDecode[4]
                     else:
-                        return ['B', listaDecode[1], (listaDecode[2] < listaDecode[3]), pc + listaDecode[4]], pc
+                        return ['B', listaDecode[1], listaDecode[1], (listaDecode[2] < listaDecode[3]), pc + listaDecode[4]], pc
                     
         if listaDecode[0] == 'J': # o valor imm vai pro PC | rd = PC+4 | PC += imm 
             match listaDecode[1]:
