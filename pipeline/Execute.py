@@ -22,9 +22,9 @@ class Execute():
                 case 'xor':
                     return ['R', listaDecode[1], listaDecode[2], listaDecode[3] ^ listaDecode[4]], pc
                 case 'and':
-                    return ['R', listaDecode[1], listaDecode[2], listaDecode[3] and listaDecode[4]], pc
+                    return ['R', listaDecode[1], listaDecode[2], listaDecode[3] & listaDecode[4]], pc
                 case 'or':
-                    return ['R', listaDecode[1], listaDecode[2], listaDecode[3] or listaDecode[4]], pc
+                    return ['R', listaDecode[1], listaDecode[2], listaDecode[3] | listaDecode[4]], pc
                 case 'sll':
                     return ['R', listaDecode[1], listaDecode[2], listaDecode[3] << listaDecode[4]], pc
                 case 'srl':
@@ -36,6 +36,8 @@ class Execute():
                     return ['I', listaDecode[1], listaDecode[2], listaDecode[3] + listaDecode[4]], pc
                 case 'lw':
                     return ['I', listaDecode[1], listaDecode[2], listaDecode[3] + listaDecode[4]], pc # retorna [tipo, mnemonico, adress(rd), posicao a ler]
+                case 'jalr':
+                    return ['I', listaDecode[1], listaDecode[2], pc + 1], pc + listaDecode[3] + listaDecode[4]
                 
         if listaDecode[0] == 'S': # o valor imm vai pro PC | rd = PC+4 | PC += imm 
             return ['S', listaDecode[1], listaDecode[2], listaDecode[3] + listaDecode[4]], pc # retorna [tipo, mnemonico, adress(rd), posicao a guardar]
