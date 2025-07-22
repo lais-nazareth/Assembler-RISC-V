@@ -11,8 +11,13 @@ class InstructionFetch:
         self.currentline = None
         self.labels = {}
         if self.binaryfile:
-            fp = open(self.binaryfile, "r")
-            self.filelist = fp.readlines()
+            with open(self.binaryfile, "rb") as f:
+                self.filelist = []
+                while True:
+                    instrucao = f.read(4) #1 instrução = 32 bits = 4bytes
+                    if len(instrucao) < 4:
+                        break #fim do arquivo
+                    self.filelist.append(instrucao)
         else:
             self.findlabelsASM()
             fp = open(self.asmfile, "r")
