@@ -82,6 +82,9 @@ class InstructionFetch:
                 line = line[1:]
 
         
+        if line[0] == "nop":
+            return ['I', "addi", 0, 0, 0], pc
+
         instruction = Instructions.instructions[line[0]]
         print(instruction)
 
