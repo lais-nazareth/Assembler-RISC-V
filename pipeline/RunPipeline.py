@@ -55,10 +55,13 @@ class RunPipeline():
             self.listaInstrucoes.append(f"{self.atualInstrucao[1]} {rd_name}, {rs1_name}, {rs2_name}")
 
         elif tipo in ('I', 'B'):  # ['I', opcode, rd, rs1, imm] ou ['B', opcode, rs1, rs2, imm]
-            rd_name  = index_to_name[self.atualInstrucao[2]]
-            rs1_name = index_to_name[self.atualInstrucao[3]]
-            imm      = self.atualInstrucao[4]
-            self.listaInstrucoes.append(f"{self.atualInstrucao[1]} {rd_name}, {rs1_name}, {imm}")
+            if self.atualInstrucao[1] == "addi" and self.atualInstrucao[2] == 0 and self.atualInstrucao[3] == 0 and self.atualInstrucao[4] == 0:
+                self.listaInstrucoes.append("nop")
+            else:
+                rd_name  = index_to_name[self.atualInstrucao[2]]
+                rs1_name = index_to_name[self.atualInstrucao[3]]
+                imm      = self.atualInstrucao[4]
+                self.listaInstrucoes.append(f"{self.atualInstrucao[1]} {rd_name}, {rs1_name}, {imm}")
 
         elif tipo == 'S':  # ['S', opcode, rd, rs1, imm]
             rs2_name = index_to_name[self.atualInstrucao[2]]
@@ -92,7 +95,9 @@ class RunPipeline():
             if self.regifid:
                 listaDecode = self.id.runInstructionDecode(self.regifid, self.value_regs)
 
-            print(listaFetch)
+            # if listaFetch != ['I', 'addi', 0, 0, 0]:
+                # print(listaFetch)
+
             if newpc != -1:
                 self.atualInstrucao = listaFetch
                 self.converteNome()
@@ -110,7 +115,8 @@ class RunPipeline():
                         self.pc = pcexec
                 if listaExecute[0] == 'J':
                     self.pc = pcexec
-            print(self.pc)
+            
+            # print(self.pc)
 
             # if self.regifid:
             #     self.regidex = listaDecode
@@ -144,44 +150,9 @@ class RunPipeline():
                 self.regidex = listaDecode
 
             self.regifid = listaFetch
-                # print(self.value_regs)
 
-    # def run(self):
-    #     # print(self.memory)
-    #     # print(self.value_regs)
-    #     while True: # ciclos
-    #         oldpc = self.pc
-    #         listaFetch, newpc = self.ifetch.runInstructionFetch(self.pc) # retorna o tipo, qual op fazer, indice rs1, indice rs2 e indice rd ou imediato
-    #         if newpc == -1:
-    #             print(self.listaInstrucoes)
-    #             return
-    #         print(listaFetch)
-    #         self.atualInstrucao = listaFetch
-    #         self.converteNome()
-    #         self.pc = newpc
-    #         listaDecode = self.id.runInstructionDecode(listaFetch, self.value_regs)
-    #         print(listaDecode)
-    #         if self.asmfile:
-    #             listaExecute, pcexec = self.ex.runExecute(listaDecode, newpc)
-    #         else:
-    #             listaExecute, pcexec = self.ex.runExecute(listaDecode, oldpc)
-    #         if listaExecute[0] == 'B':
-    #             if listaExecute[2]:
-    #                 self.pc = pcexec
-    #         if listaExecute[0] == 'J':
-    #             self.pc = pcexec
-    #         print(self.pc)
-    #         if listaExecute[1] == "lw" or listaExecute[1] == "sw":
-    #             listaExecToMem = listaExecute[:]
-    #             listaExecToMem[2] = self.value_regs[listaExecute[2]]
-    #             wordRead = self.mem.runMemoryAccess(listaExecToMem, self.memory)
-    #             listaExecute[-1] = wordRead
-    #             self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
-    #         else:
-    #             self.mem.runMemoryAccess(listaExecute, self.value_regs)
-    #         # print(self.memory)
-    #         self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
-    #         print(self.value_regs)
+            
+                # print(self.value_regs)
 
     def next(self): 
         oldpc = self.pc
@@ -198,7 +169,7 @@ class RunPipeline():
         if self.regifid:
             listaDecode = self.id.runInstructionDecode(self.regifid, self.value_regs)
 
-        print(listaFetch)
+        # print(listaFetch)
         if newpc != -1:
             self.atualInstrucao = listaFetch
             self.converteNome()
@@ -216,7 +187,7 @@ class RunPipeline():
                     self.pc = pcexec
             if listaExecute[0] == 'J':
                 self.pc = pcexec
-        print(self.pc)
+        # print(self.pc)
 
         # if self.regifid:
         #     self.regidex = listaDecode

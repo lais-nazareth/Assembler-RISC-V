@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.uic import loadUi
 from riscv_data.registers import Registers
 from pipeline.RunPipeline import RunPipeline
-from pipeline.MainMemory import MainMemory
 from PyQt5.QtGui import QColor
 
 YB = 60 #Altura dos Botoes
@@ -29,8 +28,8 @@ class MainWindow(QMainWindow):
         self.instructions = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
 
 
-        self.main_memory = MainMemory()
-        self.mem = self.main_memory.memory
+        # self.main_memory = MainMemory()
+        # self.mem = self.main_memory.memory
         self.run = False
 
         #botao de run (Roda todo pipeline)
@@ -178,26 +177,14 @@ class MainWindow(QMainWindow):
             # Atualiza lista de instruções já executadas
             self.instructions = self.pipeline.listaInstrucoes
             self.updatePipelineTable()
-            """""
-            for i in range (0,len(self.instructions)): #preenche com os steps
-                    for j in range (0,5):
-                        self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
-                        if (self.steps[j] == "Ifetch"): #["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(112, 214, 255))
-                        elif self.steps[j] == "Reg/Dec":
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 112, 166))
-                        elif self.steps[j] == "Exec":
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 151, 112))
-                        elif self.steps[j] == "Mem":
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 214, 112))
-                        elif self.steps[j] == "WrB":
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))"""
+
             for i, val in enumerate(self.pipeline.memory):
                 if val is not None:
                     self.table_mem.setItem(i, 0, QTableWidgetItem(str(val)))
 
 
             self.updateCycle()
+            self.updateMemoryTable()
             #if self.pipeline.pc == -1:
                 #print("Execução concluída!")
                 #self.next_button.setDisabled(True)
@@ -226,7 +213,14 @@ class MainWindow(QMainWindow):
                         self.table_pipeline.item(i, col - 1).setBackground(QColor(255, 214, 112))
                     elif step == "WrB":
                         self.table_pipeline.item(i, col - 1).setBackground(QColor(233, 255, 112))
-    
+                
+
+    def updateMemoryTable(self):
+        self.table_mem.clearContents()  # limpa antes de preencher
+        for i, val in enumerate(self.pipeline.memory):
+            if val is not None:
+                self.table_mem.setItem(i, 0, QTableWidgetItem(str(val)))
+
 
     def updateRunning(self):
         if (self.run):
@@ -249,11 +243,9 @@ class MainWindow(QMainWindow):
                         elif self.steps[j] == "WrB":
                             self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))
             #self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
-            i = 0
-            for i in range(len(self.pipeline.memory)): #Aparece somente os endereços ocupados (!= None)
-                self.table_mem.setItem(i,0, QTableWidgetItem(self.pipeline.memory[i]))
-                i+=1
-            self.table_mem.setRowCount(i)
+            for i, val in enumerate(self.pipeline.memory):
+                if val is not None:
+                    self.table_mem.setItem(i, 0, QTableWidgetItem(str(val)))
 
     def updatePipelineTable(self):
         num_instrucoes = len(self.instructions)

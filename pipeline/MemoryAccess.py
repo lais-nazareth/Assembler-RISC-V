@@ -1,4 +1,3 @@
-
 class MemoryAccess:
     def __init__(self):
         self.m = 0

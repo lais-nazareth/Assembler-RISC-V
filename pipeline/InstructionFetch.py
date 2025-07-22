@@ -258,7 +258,7 @@ class InstructionFetch:
         else:
             return "Instrução tipo-S desconhecida"
 
-        return ['S', nome, rs2, rs1, imm]
+        return ['S', nome, rs2, rs1, imm_val]
 
     def tipoB(self, instrucao):
         imm_12 = instrucao[0]
