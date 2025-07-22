@@ -81,7 +81,8 @@ class MainWindow(QMainWindow):
             self.pipeline.run()
 
             # Pega TODAS as instruções formatadas
-            self.instructions = self.pipeline.converteNome()
+            #self.instructions = self.pipeline.converteNome()
+            self.instructions = self.pipeline.listaInstrucoes
 
             # Atualiza a tabela com essas instruções
             self.updatePipelineTable()
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
     def initTablePipeline(self):
         self.table_pipeline.setGeometry(483,YT,840,600)
         
-        num_ciclos = len(self.instructions) + 4 #numero de ciclos
+        num_ciclos = num_ciclos = len(self.instructions) + 4 #numero de ciclos
 
         #seta o tamanho de linhas e colunas
         self.table_pipeline.setColumnCount(num_ciclos)
@@ -170,7 +171,7 @@ class MainWindow(QMainWindow):
 
     def updatePipelineTable(self):
         num_instrucoes = len(self.instructions)
-        num_ciclos = num_instrucoes + 4  # pode ajustar
+        num_ciclos = num_instrucoes + 4 
 
         self.table_pipeline.setRowCount(num_instrucoes)
         self.table_pipeline.setColumnCount(num_ciclos)
