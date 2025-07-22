@@ -20,13 +20,14 @@ class MainWindow(QMainWindow):
         self.setGeometry(0, 0, 1366, 768)
         self.setFixedSize(1366, 768)
         self.setWindowIcon(QIcon("source/tomate.png"))
-        
+
         self.regs = Registers()
         self.steps = ["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
 
         #self.instructions = ["lw", "sw", "sub", "lw", "add", "nop", "lw"] 
         self.file_name = None
         self.instructions = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
+
 
         self.main_memory = MainMemory()
         self.mem = self.main_memory.memory
@@ -128,8 +129,10 @@ class MainWindow(QMainWindow):
             self.pipeline = RunPipeline(self.file_name)
             self.next_button.setEnabled(True)
             self.run_button.setEnabled(True)
-
-    
+            self.instructions = self.pipeline.listaInstrucoes
+            self.total_cycles = len(self.instructions) + len(self.steps) - 1
+            self.current_cycle = 0
+            self.updatePipelineTable()
 
     def runClicked(self):
         if self.file_name:
@@ -157,11 +160,11 @@ class MainWindow(QMainWindow):
 
     def nextClicked(self):
         #print("next...")
-        
+
         if self.file_name:
             # Executa apenas UMA instrução
             self.pipeline.next()
-            
+            self.current_cycle += 1
 
             # Atualiza registradores
             for i in range(32):
@@ -175,7 +178,7 @@ class MainWindow(QMainWindow):
             # Atualiza lista de instruções já executadas
             self.instructions = self.pipeline.listaInstrucoes
             self.updatePipelineTable()
-
+            """""
             for i in range (0,len(self.instructions)): #preenche com os steps
                     for j in range (0,5):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
@@ -188,9 +191,13 @@ class MainWindow(QMainWindow):
                         elif self.steps[j] == "Mem":
                             self.table_pipeline.item(i,j+i).setBackground(QColor(255, 214, 112))
                         elif self.steps[j] == "WrB":
-                            self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))"""
+            for i, val in enumerate(self.pipeline.memory):
+                if val is not None:
+                    self.table_mem.setItem(i, 0, QTableWidgetItem(str(val)))
 
-            #
+
+            self.updateCycle()
             #if self.pipeline.pc == -1:
                 #print("Execução concluída!")
                 #self.next_button.setDisabled(True)
@@ -200,6 +207,26 @@ class MainWindow(QMainWindow):
 
 
     #------------------------Update
+    def updateCycle(self):
+        for i in range(len(self.instructions)):
+            for j, step in enumerate(self.steps):
+                col = i + j + 1  # +1 porque colunas começam em 1
+                if col == self.current_cycle:
+                    # Preenche a célula da instrução i no ciclo atual
+                    self.table_pipeline.setItem(i, col - 1, QTableWidgetItem(step))
+
+                    # Colore de acordo com o estágio
+                    if step == "Ifetch":
+                        self.table_pipeline.item(i, col - 1).setBackground(QColor(112, 214, 255))
+                    elif step == "Reg/Dec":
+                        self.table_pipeline.item(i, col - 1).setBackground(QColor(255, 112, 166))
+                    elif step == "Exec":
+                        self.table_pipeline.item(i, col - 1).setBackground(QColor(255, 151, 112))
+                    elif step == "Mem":
+                        self.table_pipeline.item(i, col - 1).setBackground(QColor(255, 214, 112))
+                    elif step == "WrB":
+                        self.table_pipeline.item(i, col - 1).setBackground(QColor(233, 255, 112))
+    
 
     def updateRunning(self):
         if (self.run):
