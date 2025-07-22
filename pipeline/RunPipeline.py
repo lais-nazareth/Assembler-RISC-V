@@ -243,7 +243,7 @@ class RunPipeline():
         self.regifid = listaFetch
 
 
-class RunPipelineDesvio():
+"""class RunPipelineDesvio():
     def __init__(self, filename: str):
         self.binaryfile = None
         self.asmfile = None
@@ -460,4 +460,4 @@ class RunPipelineDesvio():
         if self.regifid:
             self.regidex = listaDecode
 
-        self.regifid = listaFetch
+        self.regifid = listaFetch """
