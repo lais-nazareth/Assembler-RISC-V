@@ -104,5 +104,37 @@ class RunPipeline():
             self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
             print(self.value_regs)
 
-
-
+    def next(self): #SEM WHILE TRUE, PARA IR 1 POR 1...
+        oldpc = self.pc
+        listaFetch, newpc = self.ifetch.runInstructionFetch(self.pc) # retorna o tipo, qual op fazer, indice rs1, indice rs2 e indice rd ou imediato
+        if newpc == -1:
+            print("EXECUCAO CONCLUIDA.")
+            #print(self.listaInstrucoes)
+            return
+        print(listaFetch)
+        self.atualInstrucao = listaFetch
+        self.converteNome()
+        self.pc = newpc
+        listaDecode = self.id.runInstructionDecode(listaFetch, self.value_regs)
+        print(listaDecode)
+        if self.asmfile:
+            listaExecute, pcexec = self.ex.runExecute(listaDecode, newpc)
+        else:
+            listaExecute, pcexec = self.ex.runExecute(listaDecode, oldpc)
+        if listaExecute[0] == 'B':
+            if listaExecute[2]:
+                self.pc = pcexec
+        if listaExecute[0] == 'J':
+            self.pc = pcexec
+        print(self.pc)
+        if listaExecute[1] == "lw" or listaExecute[1] == "sw":
+            listaExecToMem = listaExecute[:]
+            listaExecToMem[2] = self.value_regs[listaExecute[2]]
+            wordRead = self.mem.runMemoryAccess(listaExecToMem, self.memory)
+            listaExecute[-1] = wordRead
+            self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
+        else:
+            self.mem.runMemoryAccess(listaExecute, self.value_regs)
+            # print(self.memory)
+        self.value_regs = self.wb.runWriteBack(listaExecute, self.value_regs)
+        #print(self.value_regs)

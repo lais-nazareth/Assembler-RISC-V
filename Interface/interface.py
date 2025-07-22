@@ -6,7 +6,7 @@ from PyQt5.uic import loadUi
 from riscv_data.registers import Registers
 from pipeline.RunPipeline import RunPipeline
 from pipeline.MainMemory import MainMemory
-
+from PyQt5.QtGui import QColor
 
 YB = 60 #Altura dos Botoes
 YT = 130 #Altura Tabelas
@@ -64,35 +64,10 @@ class MainWindow(QMainWindow):
 
         self.updateRunning()
 
-
+    #----------------------------init--------------------
     def initRun(self):
         self.run_button.setGeometry(1366-240-200-40 ,YB,120,40)
         self.run_button.clicked.connect(self.runClicked)
-
-
-    def runClicked(self):
-        if self.file_name:
-            self.run_button.setDisabled(True)
-            self.run = True
-            
-            # Executa pipeline e converte nomes
-            self.pipeline = RunPipeline(self.file_name)
-
-            self.pipeline.run()
-
-            # Pega TODAS as instruções formatadas
-            #self.instructions = self.pipeline.converteNome()
-            self.instructions = self.pipeline.listaInstrucoes
-
-            # Atualiza a tabela com essas instruções
-            self.updatePipelineTable()
-
-            self.updateRunning()
-        else:
-            print("SELECIONE UM ARQUIVO PARA EXECUTAR")
-
-
-
 
 
     def initNext(self):
@@ -100,27 +75,15 @@ class MainWindow(QMainWindow):
         self.next_button.clicked.connect(self.nextClicked)
 
 
-    def nextClicked(self):
-        print("next...")
-        #A Implementar...
-
-
     def initBrowse(self):
         self.browse_button.setGeometry(200,YB,120,40)
         self.browse_button.clicked.connect(self.browseClicked)
 
 
-    def browseClicked(self):
-        #print("browsing file...")
-        file = QFileDialog.getOpenFileName(self,'Select File', os.path.dirname(os.path.abspath(sys.argv[0]))) # ele nao tava localizando o .bin, entao pra testar eu tirei
-        self.file_name = file[0]
-        self.file_path.setPlaceholderText(self.file_name) #nome do arquivo é file[0]
-
     def initFilePath(self):
         self.file_path.setGeometry(200 + 120 + 40, YB, 480, 40)
         self.file_path.setPlaceholderText("No File Selected")
         self.file_path.setReadOnly(True)
-
 
     def initTablePipeline(self):
         self.table_pipeline.setGeometry(483,YT,840,600)
@@ -152,6 +115,92 @@ class MainWindow(QMainWindow):
         self.table_mem.setHorizontalHeaderLabels(["Mem Content: "])
         
 
+    #--------------------------------Clicked
+
+    def browseClicked(self):
+        #print("browsing file...")
+        file = QFileDialog.getOpenFileName(self,'Select File', os.path.dirname(os.path.abspath(sys.argv[0])), "Supported Files (*.asm *.bin *.txt);;All Files (*.*)") 
+        
+        self.file_name = file[0]
+        self.file_path.setPlaceholderText(self.file_name) #nome do arquivo é file[0]
+        if self.file_name:  
+            # Cria o pipeline mas NÃO roda nada ainda
+            self.pipeline = RunPipeline(self.file_name)
+            self.next_button.setEnabled(True)
+            self.run_button.setEnabled(True)
+
+    
+
+    def runClicked(self):
+        if self.file_name:
+            self.run_button.setDisabled(True)
+            self.run = True
+            
+            # Executa pipeline e converte nomes
+            self.pipeline = RunPipeline(self.file_name)
+
+            self.pipeline.run()
+
+            # Pega TODAS as instruções formatadas
+            #self.instructions = self.pipeline.converteNome()
+            self.instructions = self.pipeline.listaInstrucoes
+
+            # Atualiza a tabela com essas instruções
+            self.updatePipelineTable()
+
+            self.updateRunning()
+        else:
+            print("SELECIONE UM ARQUIVO PARA EXECUTAR")
+
+
+
+
+    def nextClicked(self):
+        #print("next...")
+        
+        if self.file_name:
+            # Executa apenas UMA instrução
+            self.pipeline.next()
+            
+
+            # Atualiza registradores
+            for i in range(32):
+                self.table_regs.setItem(i, 0, QTableWidgetItem(str(self.pipeline.value_regs[i])))
+
+            # Atualiza memória (só posições com valor)
+            for i, val in enumerate(self.pipeline.memory):
+                if val is not None:
+                    self.table_mem.setItem(i, 0, QTableWidgetItem(str(val)))
+
+            # Atualiza lista de instruções já executadas
+            self.instructions = self.pipeline.listaInstrucoes
+            self.updatePipelineTable()
+
+            for i in range (0,len(self.instructions)): #preenche com os steps
+                    for j in range (0,5):
+                        self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
+                        if (self.steps[j] == "Ifetch"): #["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(112, 214, 255))
+                        elif self.steps[j] == "Reg/Dec":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 112, 166))
+                        elif self.steps[j] == "Exec":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 151, 112))
+                        elif self.steps[j] == "Mem":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 214, 112))
+                        elif self.steps[j] == "WrB":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))
+
+            #
+            #if self.pipeline.pc == -1:
+                #print("Execução concluída!")
+                #self.next_button.setDisabled(True)
+        else:
+            print("SELECIONE UM ARQUIVO PARA EXECUTAR")
+ 
+
+
+    #------------------------Update
+
     def updateRunning(self):
         if (self.run):
             #Tabela de Registradores Atualizada com o RUN:
@@ -162,7 +211,17 @@ class MainWindow(QMainWindow):
             for i in range (0,len(self.instructions)): #preenche com os steps
                     for j in range (0,5):
                         self.table_pipeline.setItem(i,j+i, QTableWidgetItem(self.steps[j]))
-            self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
+                        if (self.steps[j] == "Ifetch"): #["Ifetch", "Reg/Dec", "Exec", "Mem", "WrB"]
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(112, 214, 255))
+                        elif self.steps[j] == "Reg/Dec":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 112, 166))
+                        elif self.steps[j] == "Exec":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 151, 112))
+                        elif self.steps[j] == "Mem":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(255, 214, 112))
+                        elif self.steps[j] == "WrB":
+                            self.table_pipeline.item(i,j+i).setBackground(QColor(233, 255, 112))
+            #self.table_pipeline.resizeColumnsToContents() #deixa com o tam do nome da etapa
             i = 0
             for i in range(len(self.pipeline.memory)): #Aparece somente os endereços ocupados (!= None)
                 self.table_mem.setItem(i,0, QTableWidgetItem(self.pipeline.memory[i]))
