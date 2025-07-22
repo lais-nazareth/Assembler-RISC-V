@@ -3,6 +3,7 @@ from pipeline.InstructionDecode import *
 from pipeline.Execute import *
 from pipeline.MemoryAccess import *
 from pipeline.WriteBack import *
+from riscv_data import registers
 
 
 class RunPipeline():
@@ -10,6 +11,7 @@ class RunPipeline():
         self.binaryfile = None
         self.asmfile = None
         self.filetype = None
+        
         self.listaInstrucoes = [] #Lista que contem as strings com o comando de cada instrucao, sem considerar label
         self.listaRegs = Registers().registers
         self.atualInstrucao = []
