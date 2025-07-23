@@ -31,14 +31,14 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
   |   or            | or rd, rs1, rs2   |                   |
   |   sll           | sll rd, rs1, rs2  |                   |
   |   slr           | sllr rd, rs1, rs2 |                   |
-  |   addi          | adii rd, rs1, imm |                   |
+  |   addi          | addi rd, rs1, imm |                   |
   |   lw            | lw rd, imm(rs1)   |                   |
   |   sw            | sw rd, imm(rs1)   |                   |
   |   beq           | beq rd,rs1, label | beq rd, rs1, imm  |
   |   bge           | bge rd,rs1, label | bge rd, rs1, imm  |
   |   blt           | blt rd,rs1, label | blt rd, rs1, imm  |
-  |   j             | j rd, rs1, imm    |                   |
-  |   jal           | jal rd, rs1, imm  |                   |
+  |   j             | j imm             | j label           |
+  |   jal           | jal rd, imm       | jal rd, label     |
   |   jalr          | jalr rd, imm(rs1) | jalr rd, label    |
   * No código binário, todos os tipos de formatos são suportados.
 
