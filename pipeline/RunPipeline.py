@@ -4,6 +4,7 @@ from pipeline.Execute import *
 from pipeline.MemoryAccess import *
 from pipeline.WriteBack import *
 from riscv_data import registers
+from pipeline.DeteccaoHazards import *
 
 
 class RunPipeline():
@@ -43,7 +44,15 @@ class RunPipeline():
 
         self.dicionariopc = {}
 
+        self.det = DeteccaoHazards(binaryfile=self.binaryfile, asmfile=self.asmfile)
+        self.detectou = False
+        # self.det.detect()
+
         # self.run()
+
+    def detectaHazards(self):
+        self.detectou = True
+    #     self.det.detect()
 
     def get_predicao(self, pc):
         #considera que inicializamos com desvio levemente tomado

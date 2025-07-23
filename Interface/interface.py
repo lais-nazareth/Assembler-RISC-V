@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         # self.main_memory = MainMemory()
         # self.mem = self.main_memory.memory
+        self.detectar = True
         self.run = False
 
         #botao de run (Roda todo pipeline)
@@ -142,6 +143,8 @@ class MainWindow(QMainWindow):
             
             # Executa pipeline e converte nomes
             self.pipeline = RunPipeline(self.file_name)
+            if self.detectar:
+                self.pipeline.detectaHazards()
 
             self.pipeline.run()
 
