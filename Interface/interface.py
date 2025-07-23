@@ -112,6 +112,8 @@ class MainWindow(QMainWindow):
         self.table_mem.setGeometry(43+155+70,YT,150,600)
         self.table_mem.setColumnCount(1)
         self.table_mem.setRowCount(1000)
+        adresses = [str(i) for i in range (0,1000)]
+        self.table_mem.setVerticalHeaderLabels(adresses)
         self.table_mem.setHorizontalHeaderLabels(["Mem Content: "])
         
 
