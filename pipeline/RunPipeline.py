@@ -127,7 +127,7 @@ class RunPipeline():
 
             if self.regidex:
                 if self.asmfile:
-                    listaExecute, pcexec = self.ex.runExecute(self.regidex, newpc-2)
+                    listaExecute, pcexec = self.ex.runExecute(self.regidex, oldpc-2)
                 else:
                     listaExecute, pcexec = self.ex.runExecute(self.regidex, oldpc-2)
                 if listaExecute[0] == 'B':
