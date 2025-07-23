@@ -187,6 +187,11 @@ class MainWindow(QMainWindow):
 
             self.updateCycle()
             self.updateMemoryTable()
+            '''
+            scroll_bar = self.table_pipeline.horizontalScrollBar()
+            largura_coluna = self.table_pipeline.columnWidth(0)
+            scroll_bar.setValue((self.current_cycle - 1) * largura_coluna - 5)'''
+
             #if self.pipeline.pc == -1:
                 #print("Execução concluída!")
                 #self.next_button.setDisabled(True)
@@ -258,6 +263,9 @@ class MainWindow(QMainWindow):
 
         # Atualiza a coluna lateral com os nomes legíveis
         self.table_pipeline.setVerticalHeaderLabels(self.instructions)
+        #self.table_mem.scrollToItem(self.table_mem.item(self.current_cycle, 0))
+        
+
 
 
 '''
