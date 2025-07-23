@@ -53,5 +53,3 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
 * A memória começa None
 * Exemplos de Implementação: 
   - arquivosexemplos/memoria.asm: a memória preenchida está na posição 100 do vetor de memória.
-
-Desconsiderar Arquivos e Pastas com OLD.
