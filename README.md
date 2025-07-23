@@ -46,4 +46,11 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
 * A pasta **interface** contém os arquivos necessários para a implementação da interface, que recebe informações do arquivo pipeline/runPipelino para relacionar com as tabelas.
 * A pasta **pipeline** contém arquivos nomeados com cada Instrução do Pipeline, que cada um simula cada execução, sendo conectados pelo arquivo **RunPipeline.py**, que contém uma operação para o RUN e outra para o NEXT.
 * A classe main executa a interface que está conectada ao Pipeline.
+* O PC inicia no 0 e anda de 1 em 1.
+* Os registradores começam todos com 0
+* A memória começa None
+
+* Exemplos de Implementação: 
+  - arquivosexemplos/memoria.asm: a memória preenchida está na posição 100 do vetor de memória.
+
 Desconsiderar Arquivos e Pastas com OLD.
