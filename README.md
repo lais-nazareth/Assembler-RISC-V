@@ -40,6 +40,8 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
   |   j             | j rd, rs1, imm    |                   |
   |   jal           | jal rd, rs1, imm  |                   |
   |   jalr          | jalr rd, imm(rs1) | jalr rd, label    |
+  * No código binário, todos os tipos de formatos são suportados.
+
 
 ### Sobre a implementação:
 * A pasta **risc_data** contém os dicionários que contém dicionários que contém os parametros dos registradores (registers.py) e das instruções (instructions.py).
@@ -49,7 +51,6 @@ As tabelas apresentam, respectivamente, da esquerda para a direita, os valores d
 * O PC inicia no 0 e anda de 1 em 1.
 * Os registradores começam todos com 0
 * A memória começa None
-
 * Exemplos de Implementação: 
   - arquivosexemplos/memoria.asm: a memória preenchida está na posição 100 do vetor de memória.
 
